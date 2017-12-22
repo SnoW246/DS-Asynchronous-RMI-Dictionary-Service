@@ -1,0 +1,74 @@
+package ie.gmit.sw.rmi;
+
+// Library imports
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.HashMap;
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
+
+// Declaration of Dictionary Service Implementation class
+public class DictionaryServiceImpl extends UnicastRemoteObject implements DictionaryService{
+	// Declaration of serialazable object ID 
+	private static final long serialVersionUID = 1L;
+	// Declaration of variables
+    String line;
+    // Declaration of dictionary hash map
+    HashMap<String,String> dictionaryMap = new HashMap<String, String>();
+    
+    // Construction function of remote object 
+	protected DictionaryServiceImpl() throws RemoteException{
+		super();
+	}// End of DictionaryServiceImpl
+	
+	// Override lookup function
+	@Override
+	public String lookup(String entry) throws RemoteException{
+		// Try...
+		try{
+			// Declaration of reader to read in dictionary file
+			BufferedReader reader = new BufferedReader(new FileReader("dictionaryFile.csv"));
+			// While loop control to read in all of the entries in the dictionary
+            while((line = reader.readLine()) != null){
+            	// Sorting of entries into string array with every "," found in the dictionary file
+                String[] args = line.split(",");
+                // Store separated uppercase string in the dictionary map 
+                dictionaryMap.put(args[0].toUpperCase(), line.toString());
+            }// End of while loop
+            // Shutting down buffered reader
+        	reader.close();
+		}// End of try
+		// Catch exceptions
+		catch (IOException e){
+			// Print stack trace for easier debugging
+			e.printStackTrace();
+		}// End of catch
+		
+		// Declaration of if statement to search for entry string
+		if(dictionaryMap.containsKey("\"" + entry.toUpperCase() + "\"")) {
+			// Try...
+			try{
+				// Put thread to sleep to slow the service
+				Thread.sleep(1000);
+			}// End of try
+			// Catch exceptions
+			catch (InterruptedException e) {
+				// Print the stack trace for easier debugging
+				e.printStackTrace();
+			}
+			String res = dictionaryMap.get("\"" + entry.toUpperCase() + "\"");
+			res = res.replace("\"", " ");
+			return res;
+		}
+		else {
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return "Sorry, "+entry+" was not found in dictionary";
+		}// 
+	}// 
+}// End of Dictionary Service Implementation class

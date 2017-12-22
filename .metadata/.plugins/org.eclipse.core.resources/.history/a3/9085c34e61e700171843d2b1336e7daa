@@ -1,0 +1,22 @@
+package ie.gmit.sw.rmi;
+
+//Library imports
+import java.net.MalformedURLException;
+import java.rmi.Naming;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+
+public class Server {
+
+	public static void main(String[] args) throws RemoteException, MalformedURLException {
+		
+		DictionaryService lookup = new DictionaryServiceImpl();
+		
+		LocateRegistry.createRegistry(9000);
+		
+		Naming.rebind("lookup", lookup);
+
+		System.out.println("Dictionary service is ready.");
+	}
+
+}

@@ -1,0 +1,67 @@
+package ie.gmit.sw.rmi;
+
+// Library imports
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.HashMap;
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
+
+// Declaration of Dictionary Service Implementation class
+public class DictionaryServiceImpl extends UnicastRemoteObject implements DictionaryService{
+	// Declaration of serialazable object ID 
+	private static final long serialVersionUID = 1L;
+	// Declaration of variables
+    String line;
+    // Declaration of hash map
+    HashMap<String,String> map = new HashMap<String, String>();
+    
+    // Construction function of remote object 
+	protected DictionaryServiceImpl() throws RemoteException {
+		super();
+	}// End of DictionaryServiceImpl
+	
+	// Override lookup function
+	@Override
+	public String lookup(String s) throws RemoteException {
+		// Try...
+		try {
+			// Declaration of reader to read in dictionary file
+			BufferedReader reader = new BufferedReader(new FileReader("dictionaryFile.csv"));
+			// While loop control to read in all of the entries in the dictionary
+            while ((line = reader.readLine()) != null) {
+
+                String[] args = line.split(",");
+                
+                map.put(args[0].toUpperCase(), line.toString());
+            }
+        	reader.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		if(map.containsKey("\"" + s.toUpperCase() + "\"")) {
+			
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			String res = map.get("\"" + s.toUpperCase() + "\"");
+			res = res.replace("\"", " ");
+			return res;
+		}
+		else {
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return "Sorry, "+s+" was not found in dictionary";
+		}// 
+	}// 
+}// End of Dictionary Service Implementation class

@@ -1,0 +1,11 @@
+package ie.gmit.sw.rmi;
+
+// Library imports
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+
+public interface DictionaryService extends Remote{
+	
+	public String lookup(String s) throws RemoteException;
+	
+}
